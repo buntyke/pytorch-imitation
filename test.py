@@ -46,23 +46,27 @@ def main(config, resume, env):
         obs = env.reset()
 
         while not done:
+            # predict action
             obs = torch.from_numpy(obs[None, :].astype(np.float32))
             if torch.cuda.is_available():
                 obs = obs.cuda()
             action = model(Variable(obs))
 
+            # perform step in env
             action = action.data
             if torch.cuda.is_available():
                 action = action.cpu()
             obs, r, done, _ = env.step(action.numpy()[0])
 
+            # update stats
             steps += 1
             totalr += r
-
             env.render()
 
+            # break condition
             if steps >= max_steps:
                 break
+
         returns.append(totalr)
 
     # output statistics

@@ -101,7 +101,6 @@ ENV/
 .mypy_cache/
 
 # input data, saved log, checkpoints
-data/
 input/
 saved/
 datasets/
@@ -114,3 +113,6 @@ __MACOSX/
 # package specific
 *.json
 !ant.json
+
+*.pkl
+!data/Mujoco/Ant-v2.pkl
