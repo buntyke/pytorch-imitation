@@ -11,7 +11,7 @@ class MujocoPolicy(BaseModel):
     Policy used for Mujoco environments
     3 fully connected layers with cont. output
     """
-    def __init__(self, obs_dim, act_dim):
+    def __init__(self, obs_dim, act_dim, batch_size=1):
         super(MujocoPolicy, self).__init__()
 
         # initialize 3 fully connected layers
