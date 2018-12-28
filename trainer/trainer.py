@@ -16,7 +16,8 @@ class Trainer(BaseTrainer):
                  data_loader, valid_data_loader=None, lr_scheduler=None, 
                  train_logger=None, loss_weights=[1.0,0.1]):
 
-        super(Trainer, self).__init__(model, loss, metrics, optimizer, resume, config, train_logger)
+        super(Trainer, self).__init__(model, loss, metrics, optimizer, 
+                                      resume, config, train_logger)
 
         # initialize trainer parameters
         self.config = config
@@ -60,11 +61,15 @@ class Trainer(BaseTrainer):
             loss = self.loss(output, act, self.loss_weights)
 
             # perform backprop
-            loss.backward()
+            if self.config['arch']['mode'] == 'recurrent':
+                loss.backward(retain_graph=True)
+            else:
+                loss.backward()
+
             self.optimizer.step()
 
             # logging
-            self.writer.set_step((epoch - 1) * len(self.data_loader) + batch_idx)
+            self.writer.set_step((epoch - 1)*len(self.data_loader) + batch_idx)
             self.writer.add_scalar('loss', loss.item())
 
             # append to loss

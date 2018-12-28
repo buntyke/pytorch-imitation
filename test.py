@@ -15,6 +15,7 @@ import data_loader.data_loaders as module_data
 
 def main(config, resume, env):
     # build model architecture
+    config['arch']['args']['batch_size'] = 1
     model = get_instance(module_arch, 'arch', config)
     model.summary()
 
@@ -47,7 +48,13 @@ def main(config, resume, env):
 
         while not done:
             # predict action
-            obs = torch.from_numpy(obs[None, :].astype(np.float32))
+            if config['arch']['mode'] == 'recurrent':
+                obs = obs[None, None, :]
+            else:
+                obs = obs[None, :]
+
+            obs = torch.from_numpy(obs.astype(np.float32))
+            
             if torch.cuda.is_available():
                 obs = obs.cuda()
             action = model(Variable(obs))
@@ -56,7 +63,14 @@ def main(config, resume, env):
             action = action.data
             if torch.cuda.is_available():
                 action = action.cpu()
-            obs, r, done, _ = env.step(action.numpy()[0])
+            action = action.numpy()
+
+            if config['arch']['mode'] == 'recurrent':
+                action = action[0,0,:]
+            else:
+                action = action[0,:]
+
+            obs, r, done, _ = env.step(action)
 
             # update stats
             steps += 1
