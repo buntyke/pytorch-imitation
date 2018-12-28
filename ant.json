@@ -4,6 +4,7 @@
     
     "arch": {
         "type": "MujocoPolicy",
+        "mode": "feedforward",
         "args": {
             "obs_dim": 111,
             "act_dim": 8

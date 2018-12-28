@@ -57,7 +57,7 @@ if __name__ == '__main__':
         config = json.load(open(args.config))
         path = os.path.join(config['trainer']['save_dir'], config['name'])
     elif args.resume:
-        # load config file from checkpoint, in case new config file is not given.
+        # load config file from checkpoint, in case config file not given.
         config = torch.load(args.resume)['config']
     else:
         raise AssertionError("Configuration file need to be specified. \
