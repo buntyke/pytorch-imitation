@@ -53,6 +53,11 @@ These instructions will get you started with the repository.
 
 * Every experiment requires a `json` file to provide the configuration. A config file for the `Ant-v2` environment is provided.
 
+* Download the dataset for `Ant-v2` environment from [here](https://github.com/buntyke/pytorch-imitation/releases/download/v1.0/Ant-v2.pkl) and place it in the following folder:
+  ```
+  pytorch-imitation/data/Mujoco/Ant-v2.pkl
+  ```
+
 * Train the policy network using the ant config file:
   ```
   (imitation) $ python train.py -c ant.json
