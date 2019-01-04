@@ -8,15 +8,16 @@
         "args": {
             "obs_dim": 111,
             "act_dim": 8,
-            "batch_size": 32
+            "batch_size": 8,
+            "num_layers": 2
         }
     },
     "data_loader": {
         "type": "MujocoSeqDataLoader",
         "args":{
             "pickle_file": "data/Mujoco/Ant-v2.pkl",
-            "seq_size": 25,
-            "batch_size": 32,
+            "batch_size": 8,
+            "seq_size": 500,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2
@@ -42,7 +43,7 @@
         }
     },
     "trainer": {
-        "epochs": 100,
+        "epochs": 200,
         "save_dir": "saved/",
         "save_period": 1,
         "verbosity": 2,

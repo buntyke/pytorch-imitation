@@ -37,7 +37,7 @@ class MujocoSeqDataset(Dataset):
     """
     Dataset class for mujoco expert datasets
     """
-    def __init__(self, pickle_file, seq_size=30):
+    def __init__(self, pickle_file, seq_size=250):
         """
         Args:
             pickle_file (string): path to dataset pickle file
@@ -54,41 +54,22 @@ class MujocoSeqDataset(Dataset):
         observations = dataset['observations'].astype(np.float32)
         actions = np.squeeze(dataset['actions']).astype(np.float32)
 
-        epstarts = [0]*seq_tails.shape[0]
         actions = np.split(actions, seq_tails)[:-1]
         observations = np.split(observations, seq_tails)[:-1]
 
-        # split into small sequences
-        for n in range(len(actions)):
-            act_array = actions[n]
-            obs_array = observations[n]
-            n_seqs = int(act_array.shape[0]/self.seq_size)
-            traj_len = act_array.shape[0]-act_array.shape[0]%self.seq_size
-
-            act_array = np.split(act_array[:traj_len], n_seqs)
-            obs_array = np.split(obs_array[:traj_len], n_seqs)
-            if act_array[-1].shape[0] < self.seq_size:
-                act_array = act_array[:-1]
-                obs_array = obs_array[:-1]
-
-            actions[n] = act_array
-            observations[n] = obs_array
-
-            epstarts[n] = np.zeros(len(act_array))
-            epstarts[n][0] = 1
-
         # assign class variables
-        self.act_seqs = np.concatenate(actions, axis=0)
-        self.epstarts = np.concatenate(epstarts, axis=0)
-        self.obs_seqs = np.concatenate(observations, axis=0)
+        self.act_seqs = actions
+        self.obs_seqs = observations
 
         # calculate len
-        self.data_len = self.act_seqs.shape[0]
+        self.data_len = len(self.act_seqs)
 
     def __getitem__(self, index):
         # return state, action pair
-        return (self.obs_seqs[index,:], self.act_seqs[index,:], 
-                self.epstarts[index])
+        seq_length = self.obs_seqs[index].shape[0]
+        start_ind = int(np.random.uniform(high=seq_length-self.seq_size))
+        return (self.obs_seqs[index][start_ind:start_ind+self.seq_size,:], 
+                self.act_seqs[index][start_ind:start_ind+self.seq_size,:])
 
     def __len__(self):
         # return dataset length

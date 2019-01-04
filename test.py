@@ -47,7 +47,7 @@ def main(config, resume, env):
         obs = env.reset()
 
         if config['arch']['mode'] == 'recurrent':
-            model.hidden = model.init_hidden()
+            model.hidden = model.init_hidden(1)
 
         while not done:
             # predict action

@@ -49,23 +49,13 @@ class MujocoLstmPolicy(BaseModel):
         self.fc2 = nn.Linear(self.hidden_dim, self.act_dim)
 
         # initialize hidden variable
-        self.hidden = self.init_hidden()
+        self.hidden = self.init_hidden(self.batch_size)
 
-    def init_hidden(self, epstarts=None):
-
-        if epstarts is None:
-            hx = torch.zeros(self.num_layers, 
-                                self.batch_size, self.hidden_dim).cuda()
-            cx = torch.zeros(self.num_layers,
-                                self.batch_size, self.hidden_dim).cuda()
-        else:
-            hx = self.hidden[0]
-            cx = self.hidden[1]
-
-            inds = epstarts>0
-            hx[:, inds, :] = 0.0
-            cx[:, inds, :] = 0.0
-
+    def init_hidden(self, batch_size):
+        hx = torch.zeros(self.num_layers, 
+                         batch_size, self.hidden_dim).cuda()
+        cx = torch.zeros(self.num_layers,
+                         batch_size, self.hidden_dim).cuda()
         return (hx,cx)
 
     def forward(self, obs):

@@ -51,9 +51,11 @@ class Trainer(BaseTrainer):
         total_metrics = np.zeros(len(self.metrics))
 
         # loop over the dataset
-        for batch_idx, (obs, act, epstarts) in enumerate(self.data_loader):
+        for batch_idx, (obs, act) in enumerate(self.data_loader):
+
             # initialize hidden states
-            self.model.hidden = self.model.init_hidden(epstarts=epstarts)
+            train_batch_size = obs.shape[0]
+            self.model.hidden = self.model.init_hidden(train_batch_size)
 
             # initialize optim
             self.optimizer.zero_grad()
@@ -111,10 +113,11 @@ class Trainer(BaseTrainer):
 
         # validation loop
         with torch.no_grad():
-            for batch_idx, (obs, act, epstarts) in enumerate(self.valid_data_loader):
+            for batch_idx, (obs, act) in enumerate(self.valid_data_loader):
 
                 # initialize hidden states
-                self.model.hidden = self.model.init_hidden(epstarts=epstarts)
+                val_batch_size = obs.shape[0]
+                self.model.hidden = self.model.init_hidden(val_batch_size)
 
                 # initialize input
                 obs, act = obs.to(self.device), act.to(self.device)
