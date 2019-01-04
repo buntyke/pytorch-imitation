@@ -54,6 +54,7 @@ class MujocoSeqDataset(Dataset):
         observations = dataset['observations'].astype(np.float32)
         actions = np.squeeze(dataset['actions']).astype(np.float32)
 
+        epstarts = [0]*seq_tails.shape[0]
         actions = np.split(actions, seq_tails)[:-1]
         observations = np.split(observations, seq_tails)[:-1]
 
@@ -73,8 +74,12 @@ class MujocoSeqDataset(Dataset):
             actions[n] = act_array
             observations[n] = obs_array
 
+            epstarts[n] = np.zeros(len(act_array))
+            epstarts[n][0] = 1
+
         # assign class variables
         self.act_seqs = np.concatenate(actions, axis=0)
+        self.epstarts = np.concatenate(epstarts, axis=0)
         self.obs_seqs = np.concatenate(observations, axis=0)
 
         # calculate len
@@ -82,7 +87,8 @@ class MujocoSeqDataset(Dataset):
 
     def __getitem__(self, index):
         # return state, action pair
-        return (self.obs_seqs[index,:], self.act_seqs[index,:])
+        return (self.obs_seqs[index,:], self.act_seqs[index,:], 
+                self.epstarts[index])
 
     def __len__(self):
         # return dataset length

@@ -51,11 +51,21 @@ class MujocoLstmPolicy(BaseModel):
         # initialize hidden variable
         self.hidden = self.init_hidden()
 
-    def init_hidden(self):
-        hx = autograd.Variable(torch.zeros(self.num_layers, 
-                               self.batch_size, self.hidden_dim).cuda())
-        cx = autograd.Variable(torch.zeros(self.num_layers,
-                               self.batch_size, self.hidden_dim).cuda())
+    def init_hidden(self, epstarts=None):
+
+        if epstarts is None:
+            hx = torch.zeros(self.num_layers, 
+                                self.batch_size, self.hidden_dim).cuda()
+            cx = torch.zeros(self.num_layers,
+                                self.batch_size, self.hidden_dim).cuda()
+        else:
+            hx = self.hidden[0]
+            cx = self.hidden[1]
+
+            inds = epstarts>0
+            hx[:, inds, :] = 0.0
+            cx[:, inds, :] = 0.0
+
         return (hx,cx)
 
     def forward(self, obs):

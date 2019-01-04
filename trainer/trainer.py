@@ -3,7 +3,7 @@ import numpy as np
 from torchvision.utils import make_grid
 
 from base import BaseTrainer
-
+from IPython.terminal.debugger import set_trace as keyboard
 
 class Trainer(BaseTrainer):
     """
@@ -51,7 +51,10 @@ class Trainer(BaseTrainer):
         total_metrics = np.zeros(len(self.metrics))
 
         # loop over the dataset
-        for batch_idx, (obs, act) in enumerate(self.data_loader):
+        for batch_idx, (obs, act, epstarts) in enumerate(self.data_loader):
+            # initialize hidden states
+            self.model.hidden = self.model.init_hidden(epstarts=epstarts)
+
             # initialize optim
             self.optimizer.zero_grad()
             obs, act = obs.to(self.device), act.to(self.device)
@@ -108,7 +111,10 @@ class Trainer(BaseTrainer):
 
         # validation loop
         with torch.no_grad():
-            for batch_idx, (obs, act) in enumerate(self.valid_data_loader):
+            for batch_idx, (obs, act, epstarts) in enumerate(self.valid_data_loader):
+
+                # initialize hidden states
+                self.model.hidden = self.model.init_hidden(epstarts=epstarts)
 
                 # initialize input
                 obs, act = obs.to(self.device), act.to(self.device)

@@ -46,6 +46,9 @@ def main(config, resume, env):
         done = False
         obs = env.reset()
 
+        if config['arch']['mode'] == 'recurrent':
+            model.hidden = model.init_hidden()
+
         while not done:
             # predict action
             if config['arch']['mode'] == 'recurrent':
@@ -54,7 +57,7 @@ def main(config, resume, env):
                 obs = obs[None, :]
 
             obs = torch.from_numpy(obs.astype(np.float32))
-            
+
             if torch.cuda.is_available():
                 obs = obs.cuda()
             action = model(Variable(obs))
