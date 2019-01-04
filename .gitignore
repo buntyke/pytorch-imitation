@@ -116,4 +116,3 @@ __MACOSX/
 !ant_lstm.json
 
 *.pkl
-!data/Mujoco/Ant-v2.pkl
