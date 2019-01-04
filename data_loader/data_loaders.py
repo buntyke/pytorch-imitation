@@ -37,13 +37,16 @@ class MujocoSeqDataset(Dataset):
     """
     Dataset class for mujoco expert datasets
     """
-    def __init__(self, pickle_file, seq_size=250):
+    def __init__(self, pickle_file, seq_size=250, start_ind=0):
         """
         Args:
             pickle_file (string): path to dataset pickle file
         """
         # set sequence size
         self.seq_size = seq_size
+
+        # set the start index
+        self.start_ind = start_ind
 
         # load the pickle file
         with open(pickle_file, 'rb') as f:
@@ -66,10 +69,8 @@ class MujocoSeqDataset(Dataset):
 
     def __getitem__(self, index):
         # return state, action pair
-        seq_length = self.obs_seqs[index].shape[0]
-        start_ind = int(np.random.uniform(high=seq_length-self.seq_size))
-        return (self.obs_seqs[index][start_ind:start_ind+self.seq_size,:], 
-                self.act_seqs[index][start_ind:start_ind+self.seq_size,:])
+        return (self.obs_seqs[index][self.start_ind:self.start_ind+self.seq_size,:], 
+                self.act_seqs[index][self.start_ind:self.start_ind+self.seq_size,:])
 
     def __len__(self):
         # return dataset length
@@ -90,9 +91,9 @@ class MujocoSeqDataLoader(BaseDataLoader):
     """
     Data loader for mujoco expert datasets
     """
-    def __init__(self, pickle_file, seq_size, batch_size, shuffle, 
-                 validation_split, num_workers):
-        self.dataset = MujocoSeqDataset(pickle_file, seq_size)
+    def __init__(self, pickle_file, batch_size, shuffle, 
+                 validation_split, num_workers, seq_size=250, start_ind=0):
+        self.dataset = MujocoSeqDataset(pickle_file, seq_size, start_ind)
 
         super(MujocoSeqDataLoader, self).__init__(self.dataset, batch_size, 
                                     shuffle, validation_split, num_workers)

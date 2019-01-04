@@ -17,10 +17,11 @@
         "args":{
             "pickle_file": "data/Mujoco/Ant-v2.pkl",
             "batch_size": 8,
-            "seq_size": 500,
             "shuffle": true,
             "validation_split": 0.1,
-            "num_workers": 2
+            "num_workers": 2,
+            "seq_size": 500,
+            "start_ind": 0
         }
     },
     "optimizer": {

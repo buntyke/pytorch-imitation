@@ -54,8 +54,9 @@ class Trainer(BaseTrainer):
         for batch_idx, (obs, act) in enumerate(self.data_loader):
 
             # initialize hidden states
-            train_batch_size = obs.shape[0]
-            self.model.hidden = self.model.init_hidden(train_batch_size)
+            if self.config['arch']['mode'] == 'recurrent':
+                train_batch_size = obs.shape[0]
+                self.model.hidden = self.model.init_hidden(train_batch_size)
 
             # initialize optim
             self.optimizer.zero_grad()
@@ -116,8 +117,9 @@ class Trainer(BaseTrainer):
             for batch_idx, (obs, act) in enumerate(self.valid_data_loader):
 
                 # initialize hidden states
-                val_batch_size = obs.shape[0]
-                self.model.hidden = self.model.init_hidden(val_batch_size)
+                if self.config['arch']['mode'] == 'recurrent':
+                    val_batch_size = obs.shape[0]
+                    self.model.hidden = self.model.init_hidden(val_batch_size)
 
                 # initialize input
                 obs, act = obs.to(self.device), act.to(self.device)
